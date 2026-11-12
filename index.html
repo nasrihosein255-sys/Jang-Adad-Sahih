@@ -7,249 +7,420 @@
 <title>دستیار نبرد اعداد صحیح</title>
 <style>
 *{box-sizing:border-box}
-body{font-family:Tahoma,Arial;background:#eef2f7;margin:0;padding:18px;color:#172033}
-.container{max-width:520px;margin:auto}
-h1{text-align:center;color:#183b70;font-size:24px}
-.panel{background:white;padding:18px;border-radius:16px;margin:14px 0;box-shadow:0 3px 12px #0001}
-label{display:block;margin:12px 0 6px;font-weight:bold}
-select,input,button{width:100%;padding:13px;border-radius:10px;border:1px solid #cbd5e1;font-size:17px}
-button{background:#1956a5;color:white;border:0;margin-top:12px;font-weight:bold}
-button:active{opacity:.8}
-.question{font-size:24px;text-align:center;direction:ltr;padding:20px;background:#f1f5f9;border-radius:12px;margin-top:15px;min-height:75px}
-.answer{font-size:24px;text-align:center;color:#08783b;font-weight:bold;margin-top:15px}
-.small{text-align:center;color:#64748b;font-size:13px}
+body{
+ font-family:Tahoma,Arial;
+ background:#eef2f7;
+ color:#172033;
+ margin:0;
+ padding:15px;
+}
+.container{
+ max-width:650px;
+ margin:auto;
+ background:white;
+ padding:20px;
+ border-radius:18px;
+ box-shadow:0 4px 18px #0001;
+}
+h1{text-align:center;color:#174ea6;font-size:23px}
+label{display:block;margin:15px 0 7px;font-weight:bold}
+select,button{
+ width:100%;
+ padding:13px;
+ border-radius:10px;
+ font-size:17px;
+ border:1px solid #ccd3df;
+}
+button{
+ border:0;
+ cursor:pointer;
+ font-weight:bold;
+ margin-top:12px;
+}
+.show{background:#1769d2;color:white}
+.answer{background:#16834b;color:white}
+.reset{background:#e8edf5;color:#222}
+.panel{
+ background:#f2f6fc;
+ padding:17px;
+ margin-top:18px;
+ border-radius:12px;
+ text-align:center;
+}
+.question{
+ font-size:25px;
+ direction:ltr;
+ font-weight:bold;
+ margin:18px 0;
+ overflow-wrap:anywhere;
+}
+.result{
+ font-size:28px;
+ color:#087a42;
+ font-weight:bold;
+ direction:ltr;
+ margin:15px 0;
+}
+.message{font-size:14px;color:#687386}
+.hidden{display:none}
 </style>
 </head>
+
 <body>
 <div class="container">
-<h1>🎲 دستیار نبرد اعداد صحیح</h1>
 
-<div class="panel">
-<label>انتخاب سطح کارت</label>
+<h1>دستیار نبرد اعداد صحیح</h1>
+
+<label>سطح کارت</label>
 <select id="level">
 <option value="easy">آسان</option>
 <option value="medium">متوسط</option>
 <option value="hard">سخت</option>
 </select>
 
-<label>شماره کارت (۱ تا ۳۰)</label>
-<input id="card" type="number" min="1" max="30" value="1">
+<label>شماره کارت</label>
+<select id="card"></select>
 
 <label>عدد تاس</label>
-<input id="dice" type="number" min="1" max="6" value="1">
+<select id="dice">
+<option value="1">۱</option>
+<option value="2">۲</option>
+<option value="3">۳</option>
+<option value="4">۴</option>
+<option value="5">۵</option>
+<option value="6">۶</option>
+</select>
 
-<button onclick="showCard()">نمایش سؤال</button>
-</div>
+<button class="show" onclick="showQuestion()">نمایش سوال</button>
+  <button class="answer" onclick="showAnswer()">نمایش پاسخ</button>
+<button class="reset" onclick="resetAll()">شروع دوباره</button>
 
 <div class="panel">
-<div class="small" id="cardTitle">سؤال کارت</div>
-<div class="question" id="question">ابتدا کارت را انتخاب کن</div>
-<button onclick="showAnswer()">نمایش پاسخ بازیکن</button>
-<div class="answer" id="answer"></div>
+<div id="cardTitle">هنوز کارتی انتخاب نشده است</div>
+<div class="question" id="question"></div>
+<div class="result" id="result"></div>
+<div class="message" id="message">
+ابتدا سطح، شماره کارت و عدد تاس را انتخاب کن.
 </div>
+</div>
+
 </div>
 
 <script>
-const cards = {
+
+// بانک ۹۰ سؤال
+
+const questions = {
+
 easy: [
-["8 + (-3)", "8+(-3)"],
-["(-9) + 4", "(-9)+4"],
-["(-7) + (-4)", "(-7)+(-4)"],
-["5 - 12", "5-12"],
-["6 - (-3)", "6-(-3)"],
-["(-3) - 0", "(-3)-0"],
-["(-3) - (-8)", "(-3)-(-8)"],
-["10 + (-2)", "10+(-2)"],
-["4 + (-10)", "4+(-10)"],
-["(-9) + 9", "(-9)+9"],
-["2 × (-6)", "2*(-6)"],
-["(-3) × 4", "(-3)*4"],
-["(-2) × 0", "(-2)*0"],
-["(-3) + 18", "(-3)+18"],
-["(-6) ÷ (-24)", "(-6)/(-24)"],
-["قرینه عدد ۷- چیست؟", null],
-["قدر مطلق عدد ۹- چند است؟", null],
-["کدام بزرگ‌تر است: ۳- یا ۲۵-؟", null],
-["کدام کوچک‌تر است: ۳ یا ۲۱-؟", null],
-["0 - (-4)", "0-(-4)"],
-["3 + (-10)", "3+(-10)"],
-["12 - 7", "12-7"],
-["0 × (-3)", "0*(-3)"],
-["(-7) + 28", "(-7)+28"],
-["(-8) + (-1)", "(-8)+(-1)"],
-["(-4) - (-14)", "(-4)-(-14)"],
-["قدر مطلق عدد ۱۲- چیست؟", null],
-["قرینه عدد ۱۲ چیست؟", null],
-["5 + (-20)", "5+(-20)"],
-["(-6) × (-2)", "(-6)*(-2)"]
+"8+(-3)",
+"(-9)+4",
+"(-7)+(-4)",
+"5-12",
+"6-(-3)",
+"(-3)-0",
+"(-3)-(-8)",
+"10+(-2)",
+"4+(-10)",
+"(-9)+9",
+"2*(-6)",
+"(-3)*4",
+"(-2)*0",
+"(-3)+18",
+"(-24)*(-6)",
+"0-(-4)",
+"3+(-10)",
+"12-7",
+"0*(-3)",
+"(-7)+28",
+"(-8)+(-1)",
+"(-4)-(-14)",
+"5+(-20)",
+"(-6)*(-2)",
+"15*(-3)",
+"(-18)*6",
+"(-11)+16",
+"7-(-9)",
+"(-5)*3",
+"(-20)*(-4)"
 ],
 
 medium: [
-["5 + 4 × (-3)", "5+4*(-3)"],
-["4 - (-5) + 36", "4-(-5)+36"],
-["8 - (-3) × (-5)", "8-(-3)*(-5)"],
-["9 + (-4) + 24", "9+(-4)+24"],
-["(-8) - 5 + (-12)", "(-8)-5+(-12)"],
-["4 × 3 - 7", "4*3-7"],
-["3 × (2 + (-4))", "3*(2+(-4))"],
-["11 + 3 + (-18)", "11+3+(-18)"],
-["[(-2) - 3] - (-11)", "((-2)-3)-(-11)"],
-["3 × (-5) × (-2)", "3*(-5)*(-2)"],
-["(10 - 7) × (-2)", "(10-7)*(-2)"],
-["(-2) × (-8) + 38", "(-2)*(-8)+38"],
-["2 × (-4) + (-9)", "2*(-4)+(-9)"],
-["[(-3) + 5] - (-20)", "((-3)+5)-(-20)"],
-["9 - (-3) + (-10)", "9-(-3)+(-10)"],
-["25 + 3 × (-7)", "25+3*(-7)"],
-["(-6) - 8 + (-32)", "(-6)-8+(-32)"],
-["2 × 3 + (-4) × 5", "2*3+(-4)*5"],
-["دمای هوا ۳۰- درجه است؛ ۸ درجه افزایش یابد. دما؟", null],
-["ماهی ۵ متر زیر سطح دریاست و ۴ متر بالا می‌رود. موقعیت؟", null],
-["اختلاف ۶- و ۴ چند است؟", null],
-["(-6) + 36 + (-24)", "(-6)+36+(-24)"],
-["(-2) ÷ [6 + (-18)]", "(-2)/(6+(-18))"],
-["[(-5) + 3] × (-2)", "((-5)+3)*(-2)"],
-["(-2) + (-3) + 27", "(-2)+(-3)+27"],
-["(-6) × 2 - (-10)", "(-6)*2-(-10)"],
-["(-5) - 2 × (-7)", "(-5)-2*(-7)"],
-["[(-2) × 3] ÷ (-43)", "((-2)*3)/(-43)"],
-["4 - 13 + (-8)", "4-13+(-8)"],
-["(-9) + (-7) - 10", "(-9)+(-7)-10"]
+"5+4*(-3)",
+"4-(-5)+6",
+"8-(-3)*(-5)",
+"9+(-4)+24",
+"(-8)-5+(-12)",
+"4*3-7",
+"3*(2+(-4))",
+"11+3+(-18)",
+"((-2)-3)-(-11)",
+"3*(-5)*(-2)",
+"(10-7)*(-2)",
+"(-2)*(-8)+3",
+"2*(-4)+(-9)",
+"(-3+5)-(-20)",
+"9-(-3)+(-10)",
+"25+3*(-7)",
+"(-6)-8+(-3)",
+"2*3+(-4)*5",
+"(-6)+36+(-24)",
+"(-2)*(6+(-8))",
+"(-5+3)*(-2)",
+"(-2)+(-3)+27",
+"(-6)*2-(-10)",
+"(-5)-2*(-7)",
+"(-2)*3*(-6)",
+"4-13+(-8)",
+"(-9)+(-7)-10",
+"18+(-3)+12",
+"(-4)*5+30",
+"36+(-6)-(-8)"
 ],
 
 hard: [
-["(-5) - (-3) × 4 + (-18)", "(-5)-(-3)*4+(-18)"],
-["[8 - 3] × [6 + (-24)]", "(8-3)*(6+(-24))"],
-["(-7) × 2 - (-4) + 36", "(-7)*2-(-4)+36"],
-["13 + [(-2) - 8] × 0", "13+((-2)-8)*0"],
-["7 × 3 - [(-5) ÷ (-48)]", "7*3-((-5)/(-48))"],
-["نیازمند تکمیل متن کارت", null],
-["7 × 5 - (-4) × (-6)", "7*5-(-4)*(-6)"],
-["9 + [4 × 3] ÷ (-73)", "9+(4*3)/(-73)"],
-["نیازمند تکمیل متن کارت", null],
-["8 - 0 × [9 + (-36)]", "8-0*(9+(-36))"],
-["[(-3) × 4 - 5] - (-10)", "((-3)*4-5)-(-10)"],
-["3 + [4 × 3 + (-8)]", "3+(4*3+(-8))"],
-["20 + [0 - 7] × (-3)", "20+(0-7)*(-3)"],
-["(-3) × 5 + [8 ÷ (-96)]", "(-3)*5+8/(-96)"],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null],
-["[(-6) + 13] - (-3) × (-7)", "((-6)+13)-(-3)*(-7)"],
-["0 × 3 + 7 + (-84)", "0*3+7+(-84)"],
-["9 + (-4) + [(-6) - (-18)]", "9+(-4)+((-6)-(-18))"],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null],
-["[(-3) × 2 - 4] × (-3)", "((-3)*2-4)*(-3)"],
-["نیازمند تکمیل متن کارت", null],
-["7 - [(-4) × 5] + (-100)", "7-((-4)*5)+(-100)"],
-["(-4) + 34 + (-7) × 6", "(-4)+34+(-7)*6"],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null],
-["نیازمند تکمیل متن کارت", null]
+"(-5)-(-3)*4+(-18)",
+"(8-3)*(6+(-4))",
+"(-7)*2-(-4)+36",
+"13+((-2)-8)*2",
+"7*3-((-5)*(-4))",
+"(9-4)*(-3)-26",
+"7*5-(-4)*(-6)",
+"9+(4*3)*(-6)",
+"((-2)*3+5-4)*3",
+"8-0*(9+(-36))",
+"((-3)*4-5)-(-10)",
+"3+(4*3+(-8))",
+"20+(0-7)*(-3)",
+"(-3)*5+8*(-4)",
+"10-((-3)*2-4)+12",
+"((-4)*3+5-2)*(-2)",
+"(8*4-12)+12-0",
+"(-6+13)-(-3)*(-7)",
+"0*3+7+(-84)",
+"9+(-4)+((-6)-(-18))",
+"(100-25*2)*5",
+"(200-14*5)*10",
+"((-3)*2-4)*(-3)",
+"(0+2-5)*(9-4)",
+"7-((-4)*5)+(-10)",
+"(-4)+34+(-7)*6",
+"((12-4)-8)*3+(-25)",
+"((-3)*4-2)-(9+(-8))",
+"3+(0-2-4)*(-6)",
+"(-9)-(4*3-6)+72"
 ]
+
 };
 
-let current = null;
-let modified = null;
-let result = null;
 
-function changeNumbers(expression, dice) {
-  let tokens = [];
-  let i = 0;
-  let previous = "start";
+// ساخت منوی شماره کارت
 
-  while (i < expression.length) {
-    let c = expression[i];
+const cardSelect = document.getElementById("card");
 
-    if (/\s/.test(c)) { i++; continue; }
+function fillCards(){
+ cardSelect.innerHTML="";
+ for(let i=1;i<=30;i++){
+  let option=document.createElement("option");
+  option.value=i-1;
+  option.textContent=i;
+  cardSelect.appendChild(option);
+ }
+}
 
-    if (/[0-9.]/.test(c) || 
-       ((c === "+" || c === "-") &&
-        (previous === "start" || previous === "operator" || previous === "(") &&
-        /[0-9.]/.test(expression[i+1] || ""))) {
+fillCards();
 
-      let start = i;
-      if (c === "+" || c === "-") i++;
-      while (i < expression.length && /[0-9.]/.test(expression[i])) i++;
 
-      let value = Number(expression.slice(start, i));
-      let change = tokens.filter(t => t.type === "number").length % 2 === 0 ? -dice : dice;
-      tokens.push({type:"number", value:value + change});
-      previous = "number";
-      continue;
-    }
+// تبدیل اعداد بر اساس تاس
+// عدد اول: منهای تاس
+// عدد دوم: به علاوه تاس
+// عدد سوم: منهای تاس
+// عدد چهارم: به علاوه تاس و به همین ترتیب
 
-    tokens.push({type:"symbol", value:c});
-    if (c === "(") previous = "(";
-    else if (c === ")") previous = ")";
-    else if ("+-*/".includes(c)) previous = "operator";
+function changeNumbers(expression,dice){
+
+ const tokens = expression.match(/\d+|[()+*-]/g);
+ const prepared=[];
+ let expectingValue=true;
+
+ for(let i=0;i<tokens.length;i++){
+  let token=tokens[i];
+
+  if(token==="-" && expectingValue){
+   if(i+1<tokens.length && /^\d+$/.test(tokens[i+1])){
+    prepared.push(-Number(tokens[i+1]));
     i++;
+    expectingValue=false;
+   }else{
+    prepared.push(token);
+   }
+  }
+  else if(/^\d+$/.test(token)){
+   prepared.push(Number(token));
+   expectingValue=false;
+  }
+  else{
+   prepared.push(token);
+   if(token==="+" || token==="-" || token==="*" || token==="("){
+    expectingValue=true;
+   }else if(token===")"){
+    expectingValue=false;
+   }
+  }
+ }
+
+ let count=0;
+
+ return prepared.map(item=>{
+  if(typeof item==="number"){
+   let changed;
+
+   if(count%2===0){
+    changed=item-dice;
+   }else{
+    changed=item+dice;
+   }
+
+   count++;
+   return "("+changed+")";
   }
 
-  return tokens.map(t => t.value).join("");
+  return item;
+ }).join("");
 }
 
-function calculate(expression) {
-  if (!expression || !/^[0-9+\-*/().\s]+$/.test(expression)) return null;
-  try {
-    return Function('"use strict"; return (' + expression + ')')();
-  } catch(e) {
-    return null;
+
+// محاسبه امن عبارت ریاضی
+
+function calculate(expression){
+
+ const tokens=expression.match(/-?\d+|[()+*]/g);
+ let position=0;
+
+ function primary(){
+  let token=tokens[position++];
+
+  if(token==="("){
+   let value=addSub();
+   if(tokens[position]!==")") throw Error("پرانتز نامعتبر");
+   position++;
+   return value;
   }
+
+  return Number(token);
+ }
+
+ function multiply(){
+  let value=primary();
+
+  while(tokens[position]==="*"){
+   position++;
+   value*=primary();
+  }
+
+  return value;
+ }
+
+ function addSub(){
+  let value=multiply();
+
+  while(tokens[position]==="+" || tokens[position]==="-"){
+   let op=tokens[position++];
+   let next=multiply();
+
+   if(op==="+") value+=next;
+   else value-=next;
+  }
+
+  return value;
+ }
+
+ const answer=addSub();
+
+ if(position!==tokens.length || !Number.isSafeInteger(answer)){
+  throw Error("عبارت قابل محاسبه نیست");
+ }
+
+ return answer;
 }
 
-function showCard() {
-  const level = document.getElementById("level").value;
-  const number = Number(document.getElementById("card").value);
-  const dice = Number(document.getElementById("dice").value);
 
-  if (!Number.isInteger(number) || number < 1 || number > 30) {
-    alert("شماره کارت باید بین ۱ تا ۳۰ باشد.");
-    return;
-  }
-  if (!Number.isInteger(dice) || dice < 1 || dice > 6) {
-    alert("عدد تاس باید بین ۱ تا ۶ باشد.");
-    return;
-  }
+// نمایش سؤال
 
-  current = cards[level][number - 1];
-  modified = null;
-  result = null;
+let currentExpression="";
+let currentAnswer=null;
 
-  document.getElementById("cardTitle").textContent =
-    "کارت شماره " + number;
+function showQuestion(){
 
-  if (!current[1]) {
-    document.getElementById("question").textContent = current[0];
-    document.getElementById("answer").textContent =
-      "این کارت هنوز آماده نشده است.";
-    return;
-  }
+ const level=document.getElementById("level").value;
+ const card=Number(cardSelect.value);
+ const dice=Number(document.getElementById("dice").value);
 
-  modified = changeNumbers(current[1], dice);
-  result = calculate(modified);
+ const original=questions[level][card];
 
-  document.getElementById("question").textContent =
-    modified.replace(/\*/g, " × ").replace(/\//g, " ÷ ") + " = ؟";
+ currentExpression=changeNumbers(original,dice);
 
-  document.getElementById("answer").textContent = "";
+ document.getElementById("cardTitle").textContent=
+ "کارت شماره "+(card+1);
+
+ document.getElementById("question").textContent=
+ currentExpression+" =";
+
+ document.getElementById("result").textContent="";
+
+ try{
+  currentAnswer=calculate(currentExpression);
+
+  document.getElementById("message").textContent=
+  "سؤال آماده است. بازیکن پاسخ را محاسبه کند.";
+
+ }catch(error){
+  currentAnswer=null;
+
+  document.getElementById("message").textContent=
+  "خطا در محاسبه عبارت.";
+ }
 }
 
-function showAnswer() {
-  if (!current) {
-    alert("ابتدا یک کارت انتخاب کن.");
-    return;
-  }
-  if (result === null || !Number.isFinite(result)) {
-    document.getElementById("answer").textContent =
-      "پاسخ این کارت نیازمند تکمیل است.";
-    return;
-  }
-  document.getElementById("answer").textContent =
-    "پاسخ: " + Number(result.toFixed(6));
+
+// نمایش پاسخ
+
+function showAnswer(){
+
+ if(currentAnswer===null){
+  document.getElementById("message").textContent=
+  "ابتدا یک سؤال معتبر نمایش بده.";
+  return;
+ }
+
+ document.getElementById("result").textContent=
+ currentAnswer;
+
+ document.getElementById("message").textContent=
+ "پاسخ صحیح بازیکن";
 }
+
+
+// تغییر سطح و پاک کردن سؤال قبلی
+
+document.getElementById("level").addEventListener("change",()=>{
+ resetAll();
+});
+
+function resetAll(){
+
+ document.getElementById("question").textContent="";
+ document.getElementById("result").textContent="";
+ document.getElementById("cardTitle").textContent=
+ "هنوز کارتی انتخاب نشده است";
+
+ document.getElementById("message").textContent=
+ "ابتدا سطح، شماره کارت و عدد تاس را انتخاب کن.";
+
+ currentExpression="";
+ currentAnswer=null;
+}
+
 </script>
 </body>
 </html>
