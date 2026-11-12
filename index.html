@@ -5,142 +5,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>دستیار نبرد اعداد صحیح</title>
-
 <style>
 *{box-sizing:border-box}
 body{
- font-family:Tahoma,Arial,sans-serif;
+ font-family:Tahoma,Arial;
  background:#eef2f7;
- margin:0;
- padding:18px;
  color:#172033;
+ margin:0;
+ padding:15px;
 }
 .container{
- max-width:520px;
- margin:20px auto;
+ max-width:650px;
+ margin:auto;
  background:white;
- padding:22px;
+ padding:20px;
  border-radius:18px;
- box-shadow:0 5px 20px #0001;
+ box-shadow:0 4px 18px #0001;
 }
-h1{
- text-align:center;
- color:#173d70;
- font-size:24px;
-}
-label{
- display:block;
- margin-top:18px;
- font-weight:bold;
-}
+h1{text-align:center;color:#174ea6;font-size:23px}
+label{display:block;margin:15px 0 7px;font-weight:bold}
 select,button{
  width:100%;
  padding:13px;
- margin-top:8px;
  border-radius:10px;
  font-size:17px;
-}
-select{
- border:1px solid #ccd4df;
- background:white;
+ border:1px solid #ccd3df;
 }
 button{
  border:0;
- background:#1765b1;
- color:white;
- font-weight:bold;
  cursor:pointer;
+ font-weight:bold;
+ margin-top:12px;
 }
-button.answer{background:#16834a}
-button:active{opacity:.8}
-.questionBox{
- margin-top:22px;
- padding:20px 12px;
+.show{background:#1769d2;color:white}
+.answer{background:#16834b;color:white}
+.reset{background:#e8edf5;color:#222}
+.panel{
+ background:#f2f6fc;
+ padding:17px;
+ margin-top:18px;
  border-radius:12px;
- background:#edf4ff;
  text-align:center;
 }
-#question{
+.question{
  font-size:25px;
- font-weight:bold;
  direction:ltr;
+ font-weight:bold;
+ margin:18px 0;
  overflow-wrap:anywhere;
 }
-#result{
- font-size:32px;
- color:#16834a;
+.result{
+ font-size:28px;
+ color:#087a42;
  font-weight:bold;
- margin-top:15px;
+ direction:ltr;
+ margin:15px 0;
 }
-#message{
- text-align:center;
- margin-top:15px;
- line-height:2;
- color:#555;
-}
-#cardTitle{
- text-align:center;
- font-weight:bold;
- color:#173d70;
-}
-.footer{
- text-align:center;
- color:#777;
- font-size:12px;
- margin-top:20px;
-}
+.message{font-size:14px;color:#687386}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <h1>دستیار نبرد اعداد صحیح</h1>
 
 <label>سطح کارت</label>
 <select id="level">
- <option value="easy">آسان</option>
- <option value="medium">متوسط</option>
- <option value="hard">سخت</option>
+<option value="easy">آسان</option>
+<option value="medium">متوسط</option>
+<option value="hard">سخت</option>
 </select>
 
 <label>شماره کارت</label>
-<select id="cardSelect"></select>
+<select id="card"></select>
 
 <label>عدد تاس</label>
 <select id="dice">
- <option value="1">۱</option>
- <option value="2">۲</option>
- <option value="3">۳</option>
- <option value="4">۴</option>
- <option value="5">۵</option>
- <option value="6">۶</option>
+<option value="1">۱</option>
+<option value="2">۲</option>
+<option value="3">۳</option>
+<option value="4">۴</option>
+<option value="5">۵</option>
+<option value="6">۶</option>
 </select>
 
-<button onclick="showQuestion()">نمایش سؤال</button>
+<button class="show" onclick="showQuestion()">نمایش سوال</button>
+  <button class="answer" onclick="showAnswer()">نمایش پاسخ</button>
+<button class="reset" onclick="resetAll()">شروع دوباره</button>
 
-<div class="questionBox">
- <div id="cardTitle">هنوز کارتی انتخاب نشده است</div>
- <div id="question"></div>
- <div id="result"></div>
-</div>
-
-<button class="answer" onclick="showAnswer()">نمایش پاسخ</button>
-
-<div id="message">
+<div class="panel">
+<div id="cardTitle">هنوز کارتی انتخاب نشده است</div>
+<div class="question" id="question"></div>
+<div class="result" id="result"></div>
+<div class="message" id="message">
 ابتدا سطح، شماره کارت و عدد تاس را انتخاب کن.
 </div>
-
-<div class="footer">
-بازی آموزشی نبرد اعداد صحیح
 </div>
 
 </div>
 
 <script>
 
-// بانک سؤال‌ها
+// بانک ۹۰ سؤال
 
 const questions = {
 
@@ -148,33 +116,33 @@ easy: [
 "8+(-3)",
 "(-9)+4",
 "(-7)+(-4)",
-"12+(-5)",
-"(-8)+6",
-"15-9",
-"(-6)-3",
-"7+(-2)",
-"(-10)+8",
-"14+(-6)",
-"(-5)-(-3)",
-"9+(-4)",
-"(-12)+5",
-"6-11",
-"(-3)+9",
-"18+(-7)",
-"(-8)-(-2)",
-"5+(-9)",
-"(-4)+(-6)",
-"13-(-2)",
-"(-15)+7",
-"10+(-8)",
-"(-6)-(-4)",
-"3+(-7)",
-"(-11)+9",
-"16-20",
-"(-2)+(-5)",
-"8-(-3)",
-"(-14)+6",
-"12+(-9)"
+"5-12",
+"6-(-3)",
+"(-3)-0",
+"(-3)-(-8)",
+"10+(-2)",
+"4+(-10)",
+"(-9)+9",
+"2*(-6)",
+"(-3)*4",
+"(-2)*0",
+"(-3)+18",
+"(-24)*(-6)",
+"0-(-4)",
+"3+(-10)",
+"12-7",
+"0*(-3)",
+"(-7)+28",
+"(-8)+(-1)",
+"(-4)-(-14)",
+"5+(-20)",
+"(-6)*(-2)",
+"15*(-3)",
+"(-18)*6",
+"(-11)+16",
+"7-(-9)",
+"(-5)*3",
+"(-20)*(-4)"
 ],
 
 medium: [
@@ -211,70 +179,74 @@ medium: [
 ],
 
 hard: [
-"24/(-6)*(5-2)+9",
-"50-((-6)*(-4)+10)",
-"(12+(-20))/(-2)-9",
-"(-7)*4-((-6)*3)",
-"(-2)*5+18*(-3)",
-"64/((-4)*(-2))+(-11)",
-"(9-(-3))*(-2)+7",
-"(-5)*((-4)+9)-30",
-"(72/(-8))*(2-5)",
-"100-(12*7+(-6)*(-3))",
-"((-16)+4)*((-2)-3)",
-"(5-17)*(-3)-20",
-"((-8)*(-3)-40)/2",
-"(-36)/(3-9)+(-2)",
-"(15+(-27))/(-4)*5",
-"(-7)*(-6)-(48/(-8))",
-"(-3)*(4-10)-25",
-"81/(-9)+((-4)*(2-7))",
-"(20-(-4)*3)/8",
-"(-2)*(7-15)+((-18)/3)",
-"((-9)+3)*(4-(-2))-5",
-"36/(-6)+4*8",
-"(-12)*3+90/(-5)",
-"(48/(-8))*(7-10)",
-"100/(-10)+(-4)*(-6)",
-"((-15)+5)*(-3)+12",
-"(-8)*(-7)-100",
-"144/(-12)+5*9",
-"(-6)*(8-13)+(-20)",
-"120/(-5)/(-4)-18"
+"(-5)-(-3)*4+(-18)",
+"(8-3)*(6+(-4))",
+"(-7)*2-(-4)+36",
+"13+((-2)-8)*2",
+"7*3-((-5)*(-4))",
+"(9-4)*(-3)-26",
+"7*5-(-4)*(-6)",
+"9+(4*3)*(-6)",
+"((-2)*3+5-4)*3",
+"8-0*(9+(-36))",
+"((-3)*4-5)-(-10)",
+"3+(4*3+(-8))",
+"20+(0-7)*(-3)",
+"(-3)*5+8*(-4)",
+"10-((-3)*2-4)+12",
+"((-4)*3+5-2)*(-2)",
+"(8*4-12)+12-0",
+"(-6+13)-(-3)*(-7)",
+"0*3+7+(-84)",
+"9+(-4)+((-6)-(-18))",
+"(100-25*2)*5",
+"(200-14*5)*10",
+"((-3)*2-4)*(-3)",
+"(0+2-5)*(9-4)",
+"7-((-4)*5)+(-10)",
+"(-4)+34+(-7)*6",
+"((12-4)-8)*3+(-25)",
+"((-3)*4-2)-(9+(-8))",
+"3+(0-2-4)*(-6)",
+"(-9)-(4*3-6)+72"
 ]
 
 };
 
 
-// آماده‌سازی فهرست شماره کارت‌ها
+// ساخت منوی شماره کارت
 
-const cardSelect = document.getElementById("cardSelect");
+const cardSelect = document.getElementById("card");
 
-for(let i=1;i<=30;i++){
- const option=document.createElement("option");
- option.value=i-1;
- option.textContent=i;
- cardSelect.appendChild(option);
+function fillCards(){
+ cardSelect.innerHTML="";
+ for(let i=1;i<=30;i++){
+  let option=document.createElement("option");
+  option.value=i-1;
+  option.textContent=i;
+  cardSelect.appendChild(option);
+ }
 }
 
+fillCards();
 
-// تغییر اعداد طبق قانون تاس
+
+// تبدیل اعداد بر اساس تاس
+// عدد اول: منهای تاس
+// عدد دوم: به علاوه تاس
+// عدد سوم: منهای تاس
+// عدد چهارم: به علاوه تاس و به همین ترتیب
 
 function changeNumbers(expression,dice){
 
- const tokens=expression.match(/\d+|[()+\-*/]/g);
-
- if(!tokens) throw Error("سؤال نامعتبر است");
-
+ const tokens = expression.match(/\d+|[()+*-]/g);
  const prepared=[];
  let expectingValue=true;
 
  for(let i=0;i<tokens.length;i++){
-
   let token=tokens[i];
 
   if(token==="-" && expectingValue){
-
    if(i+1<tokens.length && /^\d+$/.test(tokens[i+1])){
     prepared.push(-Number(tokens[i+1]));
     i++;
@@ -282,17 +254,14 @@ function changeNumbers(expression,dice){
    }else{
     prepared.push(token);
    }
-
-  }else if(/^\d+$/.test(token)){
-
+  }
+  else if(/^\d+$/.test(token)){
    prepared.push(Number(token));
    expectingValue=false;
-
-  }else{
-
+  }
+  else{
    prepared.push(token);
-
-   if(["+","-","*","/","("].includes(token)){
+   if(token==="+" || token==="-" || token==="*" || token==="("){
     expectingValue=true;
    }else if(token===")"){
     expectingValue=false;
@@ -303,9 +272,7 @@ function changeNumbers(expression,dice){
  let count=0;
 
  return prepared.map(item=>{
-
   if(typeof item==="number"){
-
    let changed;
 
    if(count%2===0){
@@ -315,114 +282,62 @@ function changeNumbers(expression,dice){
    }
 
    count++;
-
    return "("+changed+")";
   }
 
   return item;
-
  }).join("");
 }
 
 
-// محاسبه عبارت ریاضی
+// محاسبه امن عبارت ریاضی
 
 function calculate(expression){
 
- const tokens=expression.match(/\d+|[()+\-*/]/g);
-
- if(!tokens) throw Error("عبارت نامعتبر است");
-
+ const tokens=expression.match(/-?\d+|[()+*]/g);
  let position=0;
 
  function primary(){
-
   let token=tokens[position++];
 
-  if(token==="-"){
-   return -primary();
-  }
-
-  if(token==="+"){
-   return primary();
-  }
-
   if(token==="("){
-
    let value=addSub();
-
-   if(tokens[position]!==")"){
-    throw Error("پرانتز نامعتبر");
-   }
-
+   if(tokens[position]!==")") throw Error("پرانتز نامعتبر");
    position++;
-
    return value;
-  }
-
-  if(!/^\d+$/.test(token || "")){
-   throw Error("عدد نامعتبر");
   }
 
   return Number(token);
  }
 
-
  function multiply(){
-
   let value=primary();
 
-  while(
-   tokens[position]==="*" ||
-   tokens[position]==="/"
-  ){
-
-   let op=tokens[position++];
-
-   let next=primary();
-
-   if(op==="*"){
-    value*=next;
-   }else{
-    if(next===0) throw Error("تقسیم بر صفر");
-    value/=next;
-   }
+  while(tokens[position]==="*"){
+   position++;
+   value*=primary();
   }
 
   return value;
  }
-
 
  function addSub(){
-
   let value=multiply();
 
-  while(
-   tokens[position]==="+" ||
-   tokens[position]==="-"
-  ){
-
+  while(tokens[position]==="+" || tokens[position]==="-"){
    let op=tokens[position++];
-
    let next=multiply();
 
-   if(op==="+"){
-    value+=next;
-   }else{
-    value-=next;
-   }
+   if(op==="+") value+=next;
+   else value-=next;
   }
 
   return value;
  }
-
 
  const answer=addSub();
 
- if(
-  position!==tokens.length ||
-  !Number.isSafeInteger(answer)
- ){
+ if(position!==tokens.length || !Number.isSafeInteger(answer)){
   throw Error("عبارت قابل محاسبه نیست");
  }
 
@@ -454,14 +369,12 @@ function showQuestion(){
  document.getElementById("result").textContent="";
 
  try{
-
   currentAnswer=calculate(currentExpression);
 
   document.getElementById("message").textContent=
   "سؤال آماده است. بازیکن پاسخ را محاسبه کند.";
 
  }catch(error){
-
   currentAnswer=null;
 
   document.getElementById("message").textContent=
@@ -475,10 +388,8 @@ function showQuestion(){
 function showAnswer(){
 
  if(currentAnswer===null){
-
   document.getElementById("message").textContent=
   "ابتدا یک سؤال معتبر نمایش بده.";
-
   return;
  }
 
@@ -486,17 +397,20 @@ function showAnswer(){
  currentAnswer;
 
  document.getElementById("message").textContent=
- "پاسخ صحیح";
+ "پاسخ صحیح بازیکن";
 }
 
 
-// پاک کردن سؤال قبلی
+// تغییر سطح و پاک کردن سؤال قبلی
+
+document.getElementById("level").addEventListener("change",()=>{
+ resetAll();
+});
 
 function resetAll(){
 
  document.getElementById("question").textContent="";
  document.getElementById("result").textContent="";
-
  document.getElementById("cardTitle").textContent=
  "هنوز کارتی انتخاب نشده است";
 
@@ -506,19 +420,6 @@ function resetAll(){
  currentExpression="";
  currentAnswer=null;
 }
-
-
-// تغییر سطح و کارت
-
-document.getElementById("level").addEventListener(
- "change",resetAll
-);
-
-cardSelect.addEventListener("change",resetAll);
-
-document.getElementById("dice").addEventListener(
- "change",resetAll
-);
 
 </script>
 </body>
