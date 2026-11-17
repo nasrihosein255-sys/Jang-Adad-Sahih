@@ -5,8 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>دستیار نبرد اعداد صحیح</title>
+
 <style>
 *{box-sizing:border-box}
+
 body{
  font-family:Tahoma,Arial;
  background:#eef2f7;
@@ -14,6 +16,7 @@ body{
  margin:0;
  padding:15px;
 }
+
 .container{
  max-width:650px;
  margin:auto;
@@ -22,8 +25,19 @@ body{
  border-radius:18px;
  box-shadow:0 4px 18px #0001;
 }
-h1{text-align:center;color:#174ea6;font-size:23px}
-label{display:block;margin:15px 0 7px;font-weight:bold}
+
+h1{
+ text-align:center;
+ color:#174ea6;
+ font-size:23px;
+}
+
+label{
+ display:block;
+ margin:15px 0 7px;
+ font-weight:bold;
+}
+
 select,button{
  width:100%;
  padding:13px;
@@ -31,15 +45,18 @@ select,button{
  font-size:17px;
  border:1px solid #ccd3df;
 }
+
 button{
  border:0;
  cursor:pointer;
  font-weight:bold;
  margin-top:12px;
 }
+
 .show{background:#1769d2;color:white}
 .answer{background:#16834b;color:white}
 .reset{background:#e8edf5;color:#222}
+
 .panel{
  background:#f2f6fc;
  padding:17px;
@@ -47,6 +64,7 @@ button{
  border-radius:12px;
  text-align:center;
 }
+
 .question{
  font-size:25px;
  direction:ltr;
@@ -54,6 +72,7 @@ button{
  margin:18px 0;
  overflow-wrap:anywhere;
 }
+
 .result{
  font-size:28px;
  color:#087a42;
@@ -61,12 +80,16 @@ button{
  direction:ltr;
  margin:15px 0;
 }
-.message{font-size:14px;color:#687386}
-.hidden{display:none}
+
+.message{
+ font-size:14px;
+ color:#687386;
+}
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <h1>دستیار نبرد اعداد صحیح</h1>
@@ -91,19 +114,23 @@ button{
 <option value="6">۶</option>
 </select>
 
-<button class="show" onclick="showQuestion()">نمایش سوال</button>
-  <button class="answer" onclick="showAnswer()">نمایش پاسخ</button>
+<button class="show" onclick="showQuestion()">نمایش سؤال</button>
+<button class="answer" onclick="showAnswer()">نمایش پاسخ</button>
 <button class="reset" onclick="resetAll()">شروع دوباره</button>
 
 <div class="panel">
+
 <div id="cardTitle">هنوز کارتی انتخاب نشده است</div>
+
 <div class="question" id="question"></div>
+
 <div class="result" id="result"></div>
+
 <div class="message" id="message">
 ابتدا سطح، شماره کارت و عدد تاس را انتخاب کن.
 </div>
-</div>
 
+</div>
 </div>
 
 <script>
@@ -219,11 +246,16 @@ hard: [
 const cardSelect = document.getElementById("card");
 
 function fillCards(){
+
  cardSelect.innerHTML="";
+
  for(let i=1;i<=30;i++){
+
   let option=document.createElement("option");
+
   option.value=i-1;
   option.textContent=i;
+
   cardSelect.appendChild(option);
  }
 }
@@ -231,39 +263,64 @@ function fillCards(){
 fillCards();
 
 
-// تبدیل اعداد بر اساس تاس
+// تغییر اعداد بر اساس عدد تاس
 // عدد اول: منهای تاس
 // عدد دوم: به علاوه تاس
 // عدد سوم: منهای تاس
-// عدد چهارم: به علاوه تاس و به همین ترتیب
+// عدد چهارم: به علاوه تاس
 
 function changeNumbers(expression,dice){
 
- const tokens = expression.match(/\d+|[()+*-]/g);
+ const tokens=expression.match(/\d+|[()+*-]/g);
+
  const prepared=[];
+
  let expectingValue=true;
 
  for(let i=0;i<tokens.length;i++){
+
   let token=tokens[i];
 
   if(token==="-" && expectingValue){
+
    if(i+1<tokens.length && /^\d+$/.test(tokens[i+1])){
+
     prepared.push(-Number(tokens[i+1]));
+
     i++;
+
     expectingValue=false;
+
    }else{
+
     prepared.push(token);
    }
+
   }
+
   else if(/^\d+$/.test(token)){
+
    prepared.push(Number(token));
+
    expectingValue=false;
+
   }
+
   else{
+
    prepared.push(token);
-   if(token==="+" || token==="-" || token==="*" || token==="("){
+
+   if(
+    token==="+" ||
+    token==="-" ||
+    token==="*" ||
+    token==="("
+   ){
+
     expectingValue=true;
+
    }else if(token===")"){
+
     expectingValue=false;
    }
   }
@@ -272,72 +329,137 @@ function changeNumbers(expression,dice){
  let count=0;
 
  return prepared.map(item=>{
+
   if(typeof item==="number"){
+
    let changed;
 
    if(count%2===0){
+
     changed=item-dice;
+
    }else{
+
     changed=item+dice;
    }
 
    count++;
+
    return "("+changed+")";
   }
 
   return item;
+
  }).join("");
 }
 
 
-// محاسبه امن عبارت ریاضی
+// محاسبه عبارت ریاضی
 
 function calculate(expression){
 
- const tokens=expression.match(/-?\d+|[()+*]/g);
+ const tokens=expression.match(/\d+|[()+*-]/g);
+
+ if(!tokens || tokens.length===0){
+
+  throw Error("عبارت خالی یا نامعتبر است");
+ }
+
  let position=0;
 
+
+ // تشخیص عدد و پرانتز و علامت منفی
+
  function primary(){
+
   let token=tokens[position++];
 
+  if(token==="-"){
+
+   return -primary();
+  }
+
+  if(token==="+"){
+
+   return primary();
+  }
+
   if(token==="("){
+
    let value=addSub();
-   if(tokens[position]!==")") throw Error("پرانتز نامعتبر");
+
+   if(tokens[position]!==")"){
+
+    throw Error("پرانتز نامعتبر");
+   }
+
    position++;
+
    return value;
+  }
+
+  if(!/^\d+$/.test(token)){
+
+   throw Error("عدد نامعتبر");
   }
 
   return Number(token);
  }
 
+
+ // انجام ضرب
+
  function multiply(){
+
   let value=primary();
 
   while(tokens[position]==="*"){
+
    position++;
+
    value*=primary();
   }
 
   return value;
  }
 
+
+ // انجام جمع و تفریق
+
  function addSub(){
+
   let value=multiply();
 
-  while(tokens[position]==="+" || tokens[position]==="-"){
+  while(
+   tokens[position]==="+" ||
+   tokens[position]==="-"
+  ){
+
    let op=tokens[position++];
+
    let next=multiply();
 
-   if(op==="+") value+=next;
-   else value-=next;
+   if(op==="+"){
+
+    value+=next;
+
+   }else{
+
+    value-=next;
+   }
   }
 
   return value;
  }
 
+
  const answer=addSub();
 
- if(position!==tokens.length || !Number.isSafeInteger(answer)){
+ if(
+  position!==tokens.length ||
+  !Number.isSafeInteger(answer)
+ ){
+
   throw Error("عبارت قابل محاسبه نیست");
  }
 
@@ -345,18 +467,31 @@ function calculate(expression){
 }
 
 
-// نمایش سؤال
+// متغیرهای سؤال و پاسخ
 
 let currentExpression="";
 let currentAnswer=null;
 
+
+// نمایش سؤال تغییر یافته
+
 function showQuestion(){
 
  const level=document.getElementById("level").value;
+
  const card=Number(cardSelect.value);
+
  const dice=Number(document.getElementById("dice").value);
 
  const original=questions[level][card];
+
+ if(!original){
+
+  document.getElementById("message").textContent=
+  "شماره کارت معتبر نیست.";
+
+  return;
+ }
 
  currentExpression=changeNumbers(original,dice);
 
@@ -369,12 +504,14 @@ function showQuestion(){
  document.getElementById("result").textContent="";
 
  try{
+
   currentAnswer=calculate(currentExpression);
 
   document.getElementById("message").textContent=
   "سؤال آماده است. بازیکن پاسخ را محاسبه کند.";
 
  }catch(error){
+
   currentAnswer=null;
 
   document.getElementById("message").textContent=
@@ -383,13 +520,15 @@ function showQuestion(){
 }
 
 
-// نمایش پاسخ
+// نمایش پاسخ صحیح
 
 function showAnswer(){
 
  if(currentAnswer===null){
+
   document.getElementById("message").textContent=
   "ابتدا یک سؤال معتبر نمایش بده.";
+
   return;
  }
 
@@ -397,20 +536,18 @@ function showAnswer(){
  currentAnswer;
 
  document.getElementById("message").textContent=
- "پاسخ صحیح بازیکن";
+ "پاسخ صحیح";
 }
 
 
-// تغییر سطح و پاک کردن سؤال قبلی
-
-document.getElementById("level").addEventListener("change",()=>{
- resetAll();
-});
+// پاک کردن سؤال و پاسخ قبلی
 
 function resetAll(){
 
  document.getElementById("question").textContent="";
+
  document.getElementById("result").textContent="";
+
  document.getElementById("cardTitle").textContent=
  "هنوز کارتی انتخاب نشده است";
 
@@ -418,9 +555,35 @@ function resetAll(){
  "ابتدا سطح، شماره کارت و عدد تاس را انتخاب کن.";
 
  currentExpression="";
+
  currentAnswer=null;
 }
 
+
+// پاک کردن سؤال هنگام تغییر سطح
+
+document.getElementById("level").addEventListener(
+ "change",
+ resetAll
+);
+
+
+// پاک کردن سؤال هنگام تغییر شماره کارت
+
+cardSelect.addEventListener(
+ "change",
+ resetAll
+);
+
+
+// پاک کردن سؤال هنگام تغییر عدد تاس
+
+document.getElementById("dice").addEventListener(
+ "change",
+ resetAll
+);
+
 </script>
+
 </body>
 </html>
